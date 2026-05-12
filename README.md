@@ -1,0 +1,2 @@
+# Mi-Proyecto-2026-2
+CHECKLIST PARA AVANZAR
