@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema Corporativo Roll Out BEME</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --panel: #ffffff;
+      --panel-2: #f8fbff;
+      --line: #d8e2ee;
+      --text: #1f2a37;
+      --muted: #607085;
+      --primary: #0b5cab;
+      --primary-2: #0e74d1;
+      --primary-soft: #e8f3ff;
+      --success: #198754;
+      --warning: #f59e0b;
+      --danger: #dc3545;
+      --shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(14, 116, 209, 0.08), transparent 24%),
+        linear-gradient(180deg, #f7fbff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .hidden { display: none !important; }
+
+    .login-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .login-brand {
+      background: linear-gradient(135deg, #0a4f92 0%, #0d67bd 56%, #1494e6 100%);
+      color: white;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-brand::before,
+    .login-brand::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .login-brand::before {
+      width: 300px;
+      height: 300px;
+      right: -80px;
+      top: -80px;
+    }
+
+    .login-brand::after {
+      width: 240px;
+      height: 240px;
+      left: -70px;
+      bottom: -60px;
+    }
+
+    .brand-top, .brand-bottom { position: relative; z-index: 1; }
+
+    .brand-mark {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+    }
+
+    .brand-title {
+      font-size: 34px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      line-height: 1.12;
+    }
+
+    .brand-subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 620px;
+      color: rgba(255,255,255,0.92);
+      margin: 0;
+    }
+
+    .brand-features {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .brand-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 999px;
+      padding: 10px 14px;
+      width: fit-content;
+      font-size: 14px;
+    }
+
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--panel);
+      border: 1px solid rgba(11, 92, 171, 0.1);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+    }
+
+    .eyebrow {
+      color: var(--primary);
+      font-size: 12px;
+      letter-spacing: 1.1px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .card-subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    .input, .select {
+      width: 100%;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    textarea.input {
+      height: 88px;
+      padding: 12px 14px;
+      resize: vertical;
+    }
+
+    .input:focus, .select:focus {
+      border-color: var(--primary-2);
+      box-shadow: 0 0 0 4px rgba(14, 116, 209, 0.12);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      height: 44px;
+      padding: 0 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
+    .btn-secondary { background: #fff; color: var(--primary); border: 1px solid var(--line); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-soft { background: var(--primary-soft); color: var(--primary); }
+
+    .login-actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .app-shell { min-height: 100vh; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 74px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      font-weight: 800;
+    }
+
+    .user-pill {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .sidebar, .panel {
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 18px;
+      position: sticky;
+      top: 94px;
+      height: fit-content;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      margin: 0 0 14px;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 700;
+      color: #334155;
+      transition: .2s ease;
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: rgba(14, 116, 209, 0.2);
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-card {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .content {
+      display: grid;
+      gap: 20px;
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e7edf4;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #28a0f0);
+      transition: width .25s ease;
+    }
+
+    .checklist-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .step-section {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .step-section-header {
+      background: linear-gradient(180deg, #f9fbfe 0%, #f2f7fc 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .step-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .step-section-body {
+      padding: 8px 12px 12px;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) 120px;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 8px;
+      transition: .15s ease;
+      border: 1px solid transparent;
+    }
+
+    .step-item:hover {
+      background: #f9fbfd;
+      border-color: #edf2f7;
+    }
+
+    .step-item.done {
+      background: #f2fcf6;
+      border-color: #d7f1e1;
+    }
+
+    .step-checkbox {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .step-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status-badge {
+      justify-self: end;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .status-pending {
+      background: #fff7e6;
+      color: #a16207;
+      border: 1px solid #fde7b1;
+    }
+
+    .status-done {
+      background: #e9f9ef;
+      color: #0f7a46;
+      border: 1px solid #cdeed9;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fbfe;
+      color: #475569;
+      font-size: 12px;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .notice {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f4f9ff;
+      border: 1px solid #dbeafe;
+      color: #31527c;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 0 20px 24px;
+    }
+
+    @media (max-width: 1120px) {
+      .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+
+    @media (max-width: 840px) {
+      .login-shell { grid-template-columns: 1fr; }
+      .login-brand { min-height: 300px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .step-item { grid-template-columns: 30px minmax(0,1fr); }
+      .status-badge { justify-self: start; }
+      .topbar { padding: 0 14px; height: auto; min-height: 74px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginView" class="login-shell">
+    <section class="login-brand">
+      <div class="brand-top">
+        <div class="brand-mark">SC</div>
+        <h1 class="brand-title">Sistema Corporativo Roll Out BEME</h1>
+        <p class="brand-subtitle">Panel operativo con estilo corporativo para control de instalación, dominio, sincronización y validación final de equipos. Diseñado para trabajar como herramienta interna de soporte técnico.</p>
+        <div class="brand-features">
+          <div class="brand-chip">✔ Control por técnico y sucursal</div>
+          <div class="brand-chip">✔ Checklist con avance en tiempo real</div>
+          <div class="brand-chip">✔ Cierre formal con PDF</div>
+        </div>
+      </div>
+      <div class="brand-bottom">
+        <div style="font-size:13px; opacity:.9; line-height:1.7;">
+          <strong>Entorno corporativo local</strong><br>
+          Gestión operativa, cierre de checklist y exportación final.<br>
+          Interfaz inspirada en plataformas empresariales modernas.
+        </div>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <div class="eyebrow">Acceso seguro</div>
+        <h2 class="card-title">Iniciar sesión</h2>
+        <p class="card-subtitle">Ingresa con tu perfil corporativo para gestionar checklist, registrar avances y generar el cierre formal del proceso Roll Out.</p>
+        <div class="form-group">
+          <label class="label" for="loginUser">Usuario</label>
+          <input id="loginUser" class="input" type="text" placeholder="Usuario" />
+        </div>
+        <div class="form-group">
+          <label class="label" for="loginPass">Contraseña</label>
+          <input id="loginPass" class="input" type="password" placeholder="Contraseña" />
+        </div>
+        <div class="login-actions">
+          <button class="btn btn-primary" id="loginBtn">Ingresar al sistema</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo-pill">
+          <div class="logo-badge">SC</div>
+          <div>
+            <div style="font-size:15px; color:#0b5cab;">Sistema Corporativo BEME</div>
+            <div style="font-size:12px; color:#6b7280; font-weight:600;">Módulo de ejecución Roll Out</div>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div id="userPill" class="user-pill"></div>
+        <button class="btn btn-secondary" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="nav-title">Navegación</div>
+        <div class="nav-list">
+          <button class="nav-btn active" data-view="dashboard">Panel principal</button>
+          <button class="nav-btn" data-view="history">Historial local</button>
+          <button class="nav-btn" data-view="users">Usuarios</button>
+        </div>
+
+        <div class="nav-title">Resumen rápido</div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-label">Avance general</div>
+            <div class="summary-value" id="summaryPercent">0%</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Pasos completados</div>
+            <div class="summary-value" id="summaryDone">0</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Total de pasos</div>
+            <div class="summary-value" id="summaryTotal">0</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div id="dashboardView" class="panel view-block">
+          <div class="hero">
+            <div>
+              <h1>Checklist operativo corporativo</h1>
+              <p>Registra el avance del procedimiento, identifica al técnico y al usuario intervenido, y genera el cierre formal en PDF.</p>
+            </div>
+            <div class="toolbar">
+              <button class="btn btn-primary" id="saveBtn">Guardar registro</button>
+              <button class="btn btn-success" id="exportBtn">Exportar PDF</button>
+              <button class="btn btn-soft" id="exportJsonBtn">Exportar JSON</button>
+              <button class="btn btn-danger" id="resetBtn">Reiniciar checklist</button>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <label class="label" for="tecnicoInput">Técnico responsable</label>
+              <input class="input" id="tecnicoInput" type="text" placeholder="Nombre del técnico" />
+            </div>
+            <div>
+              <label class="label" for="usuarioIntervenidoInput">Usuario intervenido</label>
+              <input class="input" id="usuarioIntervenidoInput" type="text" placeholder="Nombre del usuario atendido" />
+            </div>
+            <div>
+              <label class="label" for="sucursalInput">Sucursal</label>
+              <input class="input" id="sucursalInput" type="text" placeholder="Ej: Copiapó" />
+            </div>
+            <div>
+              <label class="label" for="equipoInput">Nombre de equipo</label>
+              <input class="input" id="equipoInput" type="text" placeholder="Ej: W11-S121-ME2" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="label" for="obsInput">Observaciones operativas</label>
+            <textarea class="input" id="obsInput" placeholder="Notas relevantes del procedimiento, incidencias, bloqueo MAC, impresora, dominio, etc."></textarea>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-header">
+              <div>
+                <div style="font-weight:800; font-size:15px;">Progreso del procedimiento</div>
+                <div style="color:var(--muted); font-size:13px;">El avance se actualiza automáticamente al marcar cada paso.</div>
+              </div>
+              <div id="progressText" style="font-weight:800; color:var(--primary);">0 de 0 completados</div>
+            </div>
+            <div class="progress-bar">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="checklist-grid" id="checklistContainer"></div>
+
+          <div style="margin-top:20px; text-align:center;">
+            <button class="btn btn-warning" id="finalizarBtn" style="padding:14px 28px; font-size:16px; border-radius:18px;">
+              Finalizar checklist
+            </button>
+          </div>
+        </div>
+
+        <div id="historyView" class="panel view-block hidden">
+          <div class="hero">
+            <div>
+              <h1>Historial local</h1>
+              <p>Visualiza los registros cerrados desde este navegador.</p>
+            </div>
+            <div class="toolbar">
+              <button class="btn btn-warning" id="clearHistoryBtn">Vaciar historial</button>
+            </div>
+          </div>
+
+          <div class="notice">Solo se permite guardar un registro en historial cuando el checklist está completamente terminado.</div>
+
+          <div class="table-wrap" style="margin-top:18px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Técnico</th>
+                  <th>Usuario intervenido</th>
+                  <th>Sucursal</th>
+                  <th>Equipo</th>
+                  <th>Estado</th>
+                  <th>Avance</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="usersView" class="panel view-block hidden">
+          <div class="hero">
+            <div>
+              <h1>Gestión de usuarios</h1>
+              <p>Administra usuarios del sistema con rol Administrador o Técnico.</p>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <label class="label" for="newUserInput">Usuario</label>
+              <input class="input" id="newUserInput" type="text" placeholder="Ej: juan.perez" />
+            </div>
+            <div>
+              <label class="label" for="newPassInput">Contraseña</label>
+              <input class="input" id="newPassInput" type="password" placeholder="Contraseña" />
+            </div>
+            <div>
+              <label class="label" for="newRoleSelect">Rol</label>
+              <select class="select" id="newRoleSelect">
+                <option value="Administrador">Administrador</option>
+                <option value="Técnico">Técnico</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:end;">
+              <button class="btn btn-primary" id="createUserBtn" style="width:100%;">Crear usuario</button>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:18px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="notice" style="margin-top:18px;">Los usuarios se guardan localmente en este navegador.</div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer-note">Sistema demo desarrollado para control de procedimiento Roll Out BEME.</div>
+  </div>
+
+  <script>
+    const USERS_KEY = 'beme_corporativo_users';
+    const STORAGE_KEY = 'beme_corporativo_estado';
+    const HISTORY_KEY = 'beme_corporativo_historial';
+    const SESSION_KEY = 'beme_corporativo_sesion';
+
+    function getUsers() {
+      try {
+        const stored = localStorage.getItem(USERS_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+      } catch (e) {}
+
+      const defaultUsers = [
+        { username: 'Eduardo.lopez', password: 'Sonda.2026', role: 'Administrador' }
+      ];
+      localStorage.setItem(USERS_KEY, JSON.stringify(defaultUsers));
+      return defaultUsers;
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    const sections = [
+      {
+        title: 'Pre-validación equipo saliente',
+        items: [
+          { title: 'Descargar marcadores de EDGE', desc: 'Guardar marcadores del navegador en OneDrive para evitar demoras de sincronización.' },
+          { title: 'Validar impresora actual del usuario', desc: 'Revisar en impresoras cuál utiliza el usuario para reinstalarla correctamente.' }
+        ]
+      },
+      {
+        title: 'Configuración inicial',
+        items: [
+          { title: 'Encender equipo', desc: 'Iniciar el equipo nuevo y verificar disponibilidad operativa.' },
+          { title: 'Iniciar como administrador local', desc: 'Acceder con credenciales administrativas locales.' },
+          { title: 'Validar nombre del equipo', desc: 'Confirmar que el hostname corresponde a la sucursal donde se realiza el servicio.' },
+          { title: 'Detener Cisco Secure Client-Umbrella si aplica', desc: 'Detener el servicio antes de cambiar el nombre del equipo cuando ya esté en dominio.' },
+          { title: 'Cambiar nombre del equipo si corresponde', desc: 'Modificar el nombre del computador y dejarlo según estándar operativo.' }
+        ]
+      },
+      {
+        title: 'Red y dominio',
+        items: [
+          { title: 'Conectar a red corporativa', desc: 'Verificar conectividad por punto de red y posibles bloqueos MAC.' },
+          { title: 'Solicitar desbloqueo MAC si existe bloqueo', desc: 'Escalar a coordinación con nombre de equipo, MAC y sucursal.' },
+          { title: 'Unir equipo al dominio', desc: 'Subir el equipo al dominio usando cuenta técnica.' },
+          { title: 'Reiniciar post-dominio', desc: 'Reiniciar una vez agregado al dominio.' },
+          { title: 'Iniciar sesión con cuenta técnica', desc: 'Entrar nuevamente con la cuenta de técnico para continuar configuración.' }
+        ]
+      },
+      {
+        title: 'Políticas y primer inicio',
+        items: [
+          { title: 'Ejecutar gpupdate /force', desc: 'Aplicar políticas corporativas desde terminal.' },
+          { title: 'Confirmar aplicación de políticas', desc: 'Aceptar con S y validar reinicio.' },
+          { title: 'Verificar fondo corporativo', desc: 'Confirmar aplicación correcta de políticas mediante fondo BancoEstado.' },
+          { title: 'Iniciar sesión con usuario final', desc: 'Ingresar por Otros usuarios para completar carga de perfil.' }
+        ]
+      },
+      {
+        title: 'Configuraciones del sistema',
+        items: [
+          { title: 'Habilitar ubicación en Windows', desc: 'Permitir acceso de aplicaciones a la ubicación del equipo.' },
+          { title: 'Validar clave de registro LSA', desc: 'Revisar LsaAllowReturningUnencryptedSecrets = 1 en REGEDIT.' },
+          { title: 'Iniciar cliente Cisco', desc: 'Abrir Cisco Secure Client desde búsqueda.' },
+          { title: 'Verificar protocolo BECH_WIRE2', desc: 'Confirmar checks del cliente y protocolo activo.' },
+          { title: 'Confirmar IP activa', desc: 'Validar obtención de IP del rango esperado.' }
+        ]
+      },
+      {
+        title: 'Sincronizaciones y seguridad',
+        items: [
+          { title: 'Sincronizar OneDrive', desc: 'Configurar sincronización de archivos del usuario.' },
+          { title: 'Sincronizar Teams', desc: 'Validar acceso y carga inicial.' },
+          { title: 'Sincronizar Outlook', desc: 'Verificar correo operativo.' },
+          { title: 'Sincronizar Intranet', desc: 'Comprobar acceso a servicios internos.' },
+          { title: 'Sincronizar Edge / MiBE', desc: 'Completar configuración del navegador y sincronización cuando corresponda.' },
+          { title: 'Detener Cisco para respaldo BitLocker', desc: 'Detener el servicio Umbrella antes de respaldar claves.' },
+          { title: 'Respaldar BitLocker en enterID', desc: 'Guardar clave de recuperación para discos C: y D:.' }
+        ]
+      },
+      {
+        title: 'Cierre operativo',
+        items: [
+          { title: 'Instalar impresora de red', desc: 'Instalar según nombre validado del equipo saliente.' },
+          { title: 'Reiniciar equipo para validación final', desc: 'Hacer reinicio controlado previo a entrega.' },
+          { title: 'Solicitar inicio de sesión al usuario', desc: 'Validar acceso con credenciales del usuario.' },
+          { title: 'Confirmar aplicaciones, accesos y navegación', desc: 'Dejar validación funcional completa.' },
+          { title: 'Verificar Secure Boot en BIOS', desc: 'Confirmar arranque seguro habilitado.' }
+        ]
+      }
+    ];
+
+    const flatSteps = sections.flatMap(section => section.items);
+
+    const loginView = document.getElementById('loginView');
+    const appView = document.getElementById('appView');
+    const userPill = document.getElementById('userPill');
+    const checklistContainer = document.getElementById('checklistContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const summaryPercent = document.getElementById('summaryPercent');
+    const summaryDone = document.getElementById('summaryDone');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const historyTableBody = document.getElementById('historyTableBody');
+
+    const tecnicoInput = document.getElementById('tecnicoInput');
+    const usuarioIntervenidoInput = document.getElementById('usuarioIntervenidoInput');
+    const sucursalInput = document.getElementById('sucursalInput');
+    const equipoInput = document.getElementById('equipoInput');
+    const obsInput = document.getElementById('obsInput');
+
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const saveBtn = document.getElementById('saveBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const finalizarBtn = document.getElementById('finalizarBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+    const createUserBtn = document.getElementById('createUserBtn');
+    const usersTableBody = document.getElementById('usersTableBody');
+    const newUserInput = document.getElementById('newUserInput');
+    const newPassInput = document.getElementById('newPassInput');
+    const newRoleSelect = document.getElementById('newRoleSelect');
+
+    function getDefaultState() {
+      return {
+        tecnico: '',
+        usuarioIntervenido: '',
+        sucursal: '',
+        equipo: '',
+        estado: 'En preparación',
+        observaciones: '',
+        checks: Array(flatSteps.length).fill(false)
+      };
+    }
+
+    function getState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return getDefaultState();
+        const parsed = JSON.parse(raw);
+        return {
+          tecnico: parsed.tecnico || '',
+          usuarioIntervenido: parsed.usuarioIntervenido || '',
+          sucursal: parsed.sucursal || '',
+          equipo: parsed.equipo || '',
+          estado: parsed.estado || 'En preparación',
+          observaciones: parsed.observaciones || '',
+          checks: Array.isArray(parsed.checks)
+            ? parsed.checks.slice(0, flatSteps.length).concat(Array(Math.max(0, flatSteps.length - parsed.checks.length)).fill(false))
+            : Array(flatSteps.length).fill(false)
+        };
+      } catch (e) {
+        return getDefaultState();
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getSession() {
+      try {
+        const raw = sessionStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setSession(user) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+
+    function calculateProgress(checks) {
+      const done = checks.filter(Boolean).length;
+      const total = checks.length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      return { done, total, percent };
+    }
+
+    function getAutoStatus(done, total) {
+      if (done === 0) return 'En preparación';
+      if (done < total) return 'En ejecución';
+      return 'Finalizado';
+    }
+
+    function isChecklistComplete() {
+      const state = getState();
+      return state.checks.length > 0 && state.checks.every(Boolean);
+    }
+
+    function syncStatusWithProgress() {
+      const state = getState();
+      const prog = calculateProgress(state.checks);
+      state.estado = getAutoStatus(prog.done, prog.total);
+      saveState(state);
+      return state;
+    }
+
+    function updateProgressUI(checks) {
+      const state = syncStatusWithProgress();
+      const prog = calculateProgress(checks);
+      progressFill.style.width = prog.percent + '%';
+      progressText.textContent = `${prog.done} de ${prog.total} completados · Estado: ${state.estado}`;
+      summaryPercent.textContent = prog.percent + '%';
+      summaryDone.textContent = String(prog.done);
+      summaryTotal.textContent = String(prog.total);
+    }
+
+    function renderChecklist() {
+      const state = syncStatusWithProgress();
+      tecnicoInput.value = state.tecnico;
+      usuarioIntervenidoInput.value = state.usuarioIntervenido;
+      sucursalInput.value = state.sucursal;
+      equipoInput.value = state.equipo;
+      obsInput.value = state.observaciones;
+
+      let globalIndex = 0;
+      checklistContainer.innerHTML = sections.map(section => {
+        const startIndex = globalIndex;
+        const itemsHtml = section.items.map(item => {
+          const checked = !!state.checks[globalIndex];
+          const html = `
+            <div class="step-item ${checked ? 'done' : ''}">
+              <input class="step-checkbox" type="checkbox" data-index="${globalIndex}" ${checked ? 'checked' : ''}>
+              <div>
+                <div class="step-title">${item.title}</div>
+                <div class="step-desc">${item.desc}</div>
+              </div>
+              <div class="status-badge ${checked ? 'status-done' : 'status-pending'}">${checked ? 'Realizado' : 'Pendiente'}</div>
+            </div>`;
+          globalIndex += 1;
+          return html;
+        }).join('');
+
+        const sectionDone = state.checks.slice(startIndex, globalIndex).filter(Boolean).length;
+
+        return `
+          <div class="step-section">
+            <div class="step-section-header">
+              <h3 class="step-section-title">${section.title}</h3>
+              <div style="font-size:13px; color:var(--muted); font-weight:700;">${sectionDone} / ${section.items.length} completados</div>
+            </div>
+            <div class="step-section-body">${itemsHtml}</div>
+          </div>`;
+      }).join('');
+
+      document.querySelectorAll('.step-checkbox').forEach(box => {
+        box.addEventListener('change', function () {
+          const index = Number(this.dataset.index);
+          const current = getState();
+          current.checks[index] = this.checked;
+          saveState(current);
+          renderChecklist();
+        });
+      });
+
+      updateProgressUI(state.checks);
+      renderHistory();
+    }
+
+    function persistMetaFields() {
+      const state = getState();
+      state.tecnico = tecnicoInput.value.trim();
+      state.usuarioIntervenido = usuarioIntervenidoInput.value.trim();
+      state.sucursal = sucursalInput.value.trim();
+      state.equipo = equipoInput.value.trim();
+      state.observaciones = obsInput.value.trim();
+      saveState(state);
+      updateProgressUI(state.checks);
+    }
+
+    function bindMetaFields() {
+      [tecnicoInput, usuarioIntervenidoInput, sucursalInput, equipoInput, obsInput].forEach(el => {
+        el.addEventListener('input', persistMetaFields);
+        el.addEventListener('change', persistMetaFields);
+      });
+    }
+
+    function saveRecordToHistory() {
+      const session = getSession();
+      const state = syncStatusWithProgress();
+      const prog = calculateProgress(state.checks);
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history.unshift({
+        fecha: new Date().toLocaleString('es-CL'),
+        usuario: session?.username || 'sin sesión',
+        tecnico: state.tecnico || '-',
+        usuarioIntervenido: state.usuarioIntervenido || '-',
+        sucursal: state.sucursal || '-',
+        equipo: state.equipo || '-',
+        estado: state.estado,
+        avance: `${prog.done}/${prog.total} (${prog.percent}%)`,
+        observaciones: state.observaciones || ''
+      });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 50)));
+    }
+
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      historyTableBody.innerHTML = history.length
+        ? history.map(row => `
+          <tr>
+            <td>${row.fecha}</td>
+            <td>${row.tecnico}</td>
+            <td>${row.usuarioIntervenido}</td>
+            <td>${row.sucursal}</td>
+            <td>${row.equipo}</td>
+            <td>${row.estado}</td>
+            <td>${row.avance}</td>
+          </tr>`).join('')
+        : '<tr><td colspan="7" style="text-align:center; color:#64748b;">No hay registros guardados todavía.</td></tr>';
+    }
+
+    function renderUsers() {
+      const users = getUsers();
+      usersTableBody.innerHTML = users.map((u, i) => `
+        <tr>
+          <td>${u.username}</td>
+          <td>${u.role}</td>
+          <td><button class="btn btn-danger" onclick="deleteUser(${i})">Eliminar</button></td>
+        </tr>`).join('');
+    }
+
+    window.deleteUser = function(index) {
+      const users = getUsers();
+      if (users.length === 1) {
+        alert('Debe existir al menos un usuario en el sistema.');
+        return;
+      }
+      if (!confirm('¿Eliminar usuario?')) return;
+      users.splice(index, 1);
+      saveUsers(users);
+      renderUsers();
+    };
+
+    function doLogin() {
+      const username = loginUser.value.trim().toLowerCase();
+      const password = loginPass.value.trim();
+      const users = getUsers();
+      const found = users.find(u => u.username.toLowerCase() === username && u.password === password);
+
+      if (!found) {
+        alert('Credenciales incorrectas');
+        return;
+      }
+
+      setSession(found);
+      showApp(found);
+    }
+
+    function showApp(user) {
+      loginView.classList.add('hidden');
+      appView.classList.remove('hidden');
+      userPill.textContent = `${user.role}: ${user.username}`;
+      renderChecklist();
+      renderHistory();
+      renderUsers();
+    }
+
+    function logout() {
+      clearSession();
+      appView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      loginPass.value = '';
+    }
+
+    function switchView(viewName) {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === viewName);
+      });
+      document.querySelectorAll('.view-block').forEach(view => view.classList.add('hidden'));
+      const target = document.getElementById(viewName + 'View');
+      if (target) target.classList.remove('hidden');
+      if (viewName === 'users') renderUsers();
+      if (viewName === 'history') renderHistory();
+    }
+
+    function exportPDF() {
+      const session = getSession();
+      const state = syncStatusWithProgress();
+      const prog = calculateProgress(state.checks);
+
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('La librería de PDF no está disponible en este momento.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 14;
+      let y = 18;
+
+      const addLine = (text, x, yPos, options = {}) => {
+        const fontSize = options.fontSize || 10;
+        const style = options.style || 'normal';
+        doc.setFont('helvetica', style);
+        doc.setFontSize(fontSize);
+        const lines = doc.splitTextToSize(text, pageWidth - (x * 2));
+        doc.text(lines, x, yPos);
+        return yPos + (lines.length * (fontSize * 0.42)) + 2;
+      };
+
+      const ensureSpace = (needed = 12) => {
+        if (y + needed > pageHeight - 18) {
+          doc.addPage();
+          y = 18;
+        }
+      };
+
+      doc.setFillColor(11, 92, 171);
+      doc.roundedRect(margin, 10, pageWidth - (margin * 2), 18, 3, 3, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('Sistema Corporativo Roll Out BEME', margin + 6, 21);
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Reporte final del procedimiento', pageWidth - 62, 21);
+
+      doc.setTextColor(31,42,55);
+      y = 35;
+      y = addLine(`Fecha de generación: ${new Date().toLocaleString('es-CL')}`, margin, y, { fontSize: 9 });
+      y = addLine(`Usuario sistema: ${session?.username || '-'} | Rol: ${session?.role || '-'}`, margin, y, { fontSize: 9 });
+      y += 2;
+
+      doc.setDrawColor(216,226,238);
+      doc.setFillColor(248,251,255);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 40, 3, 3, 'FD');
+      y += 7;
+      y = addLine(`Técnico responsable: ${state.tecnico || '-'}`, margin + 4, y, { fontSize: 10, style: 'bold' });
+      y = addLine(`Usuario intervenido: ${state.usuarioIntervenido || '-'}`, margin + 4, y, { fontSize: 10 });
+      y = addLine(`Sucursal: ${state.sucursal || '-'}    Equipo: ${state.equipo || '-'}`, margin + 4, y, { fontSize: 10 });
+      y = addLine(`Estado general: ${state.estado}`, margin + 4, y, { fontSize: 10 });
+      y = addLine(`Progreso total: ${prog.done}/${prog.total} (${prog.percent}%)`, margin + 4, y, { fontSize: 10 });
+      y += 4;
+
+      ensureSpace(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text('Avance del checklist', margin, y);
+      y += 4;
+      doc.setFillColor(231,237,244);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), 6, 2, 2, 'F');
+      doc.setFillColor(11,92,171);
+      const progressWidth = ((pageWidth - (margin * 2)) * prog.percent) / 100;
+      doc.roundedRect(margin, y, progressWidth, 6, 2, 2, 'F');
+      y += 11;
+
+      ensureSpace(22);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text('Observaciones operativas', margin, y);
+      y += 5;
+      doc.setDrawColor(216,226,238);
+      doc.setFillColor(255,255,255);
+      const obsText = state.observaciones || 'Sin observaciones registradas.';
+      const obsLines = doc.splitTextToSize(obsText, pageWidth - (margin * 2) - 8);
+      const obsHeight = Math.max(12, (obsLines.length * 4.2) + 6);
+      ensureSpace(obsHeight + 4);
+      doc.roundedRect(margin, y, pageWidth - (margin * 2), obsHeight, 3, 3, 'FD');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.text(obsLines, margin + 4, y + 6);
+      y += obsHeight + 8;
+
+      let idx = 0;
+      sections.forEach(section => {
+        ensureSpace(16);
+        doc.setFillColor(242,247,252);
+        doc.setDrawColor(216,226,238);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 9, 2, 2, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text(section.title, margin + 4, y + 6);
+        y += 13;
+
+        section.items.forEach(item => {
+          ensureSpace(10);
+          const checked = !!state.checks[idx];
+          doc.setDrawColor(150,163,184);
+          doc.rect(margin, y - 3.5, 4, 4);
+          if (checked) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text('X', margin + 0.8, y - 0.2);
+          }
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9.5);
+          const itemText = `${item.title} — ${item.desc}`;
+          const itemLines = doc.splitTextToSize(itemText, pageWidth - (margin * 2) - 10);
+          doc.text(itemLines, margin + 8, y);
+          y += Math.max(7, itemLines.length * 4.2);
+          idx += 1;
+        });
+        y += 2;
+      });
+
+      ensureSpace(30);
+      y += 10;
+      doc.setDrawColor(150,150,150);
+      doc.line(margin, y, margin + 70, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Firma Técnico', margin, y + 5);
+      doc.line(pageWidth - margin - 70, y, pageWidth - margin, y);
+      doc.text(`Nombre: ${state.tecnico || '-'}`, pageWidth - margin - 70, y + 5);
+      y += 12;
+      doc.setFontSize(9);
+      doc.setTextColor(100,116,139);
+      doc.text('Confirmo que el procedimiento fue ejecutado según estándar operativo.', margin, y);
+
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(100,116,139);
+        doc.text(`Página ${i} de ${totalPages}`, pageWidth - 32, pageHeight - 8);
+        doc.text('Reporte generado por Sistema Corporativo BEME', margin, pageHeight - 8);
+      }
+
+      const safeEquipo = (state.equipo || 'equipo').replace(/[^a-zA-Z0-9_-]/g, '_');
+      doc.save(`reporte_beme_${safeEquipo}.pdf`);
+    }
+
+    loginBtn.addEventListener('click', doLogin);
+    loginUser.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    logoutBtn.addEventListener('click', logout);
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
+
+    saveBtn.addEventListener('click', () => {
+      syncStatusWithProgress();
+      if (!isChecklistComplete()) {
+        alert('No puedes guardar el registro hasta completar todo el checklist.');
+        return;
+      }
+      saveRecordToHistory();
+      renderHistory();
+      alert('Registro guardado correctamente en el historial local.');
+    });
+
+    exportBtn.addEventListener('click', () => {
+      if (!isChecklistComplete()) {
+        alert('Debes completar todo el checklist antes de exportar el PDF.');
+        return;
+      }
+      exportPDF();
+    });
+
+    exportJsonBtn.addEventListener('click', () => {
+      const state = getState();
+      const session = getSession();
+      const payload = {
+        session,
+        state,
+        generatedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'reporte_beme_corporativo.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    });
+
+    finalizarBtn.addEventListener('click', () => {
+      const state = syncStatusWithProgress();
+      if (!isChecklistComplete()) {
+        alert('Debes completar todos los pasos antes de finalizar el checklist.');
+        return;
+      }
+      if (!state.tecnico || !state.usuarioIntervenido || !state.sucursal || !state.equipo) {
+        alert('Completa técnico responsable, usuario intervenido, sucursal y nombre de equipo antes de finalizar.');
+        return;
+      }
+      saveRecordToHistory();
+      renderHistory();
+      exportPDF();
+
+      // Limpiar automáticamente el formulario después del cierre
+      saveState(getDefaultState());
+      renderChecklist();
+      alert('Checklist finalizado, PDF generado y formulario limpiado correctamente.');
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('¿Deseas reiniciar el checklist actual?')) return;
+      saveState(getDefaultState());
+      renderChecklist();
+      alert('Checklist reiniciado correctamente.');
+    });
+
+    clearHistoryBtn.addEventListener('click', () => {
+      if (!confirm('¿Deseas eliminar todo el historial local?')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    });
+
+    createUserBtn.addEventListener('click', () => {
+      const username = newUserInput.value.trim();
+      const password = newPassInput.value.trim();
+      const role = newRoleSelect.value;
+
+      if (!username || !password) {
+        alert('Completa usuario y contraseña');
+        return;
+      }
+
+      const users = getUsers();
+      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        alert('El usuario ya existe');
+        return;
+      }
+
+      users.push({ username, password, role });
+      saveUsers(users);
+      renderUsers();
+      newUserInput.value = '';
+      newPassInput.value = '';
+      newRoleSelect.value = 'Administrador';
+      alert('Usuario creado correctamente');
+    });
+
+    bindMetaFields();
+
+    const currentSession = getSession();
+    if (currentSession) {
+      showApp(currentSession);
+    }
+  </script>
+</body>
+</html>
